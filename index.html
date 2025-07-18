@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva de League of Legends</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Gold -->
+    <!-- Application Structure Plan: La aplicación está diseñada como una página de aterrizaje de un solo flujo con una barra de navegación fija en la parte superior. Esta estructura permite a los usuarios seguir un camino de aprendizaje lógico (de arriba a abajo) o saltar directamente a la sección que les interese. Las secciones agrupan conceptos relacionados (Objetivo, Mapa, Campeones, Fundamentos, Consejos) para una mejor asimilación. Las interacciones clave incluyen un selector de roles de campeón que actualiza dinámicamente el contenido para fomentar la exploración y un gráfico para visualizar la importancia relativa de los objetivos, transformando listas pasivas en herramientas de aprendizaje activas. Se eligió esta estructura porque convierte una guía lineal en una referencia explorable y fácil de usar. -->
+    <!-- Visualization & Content Choices: 1. Roles de Campeón: Info -> Roles y descripciones. Goal -> Comparar/Organizar. Viz -> Sistema de pestañas interactivas (HTML/JS). Interaction -> Al hacer clic en un rol, se muestra su descripción detallada. Justification -> Más interactivo y menos abrumador que una larga lista. Method -> HTML/Tailwind/JS. 2. Objetivos Neutrales: Info -> Jerarquía de monstruos de la jungla. Goal -> Comparar. Viz -> Gráfico de barras de Chart.js. Interaction -> Tooltips de Chart.js al pasar el ratón por encima. Justification -> Visualiza la importancia relativa de cada objetivo de forma más impactante que el texto. Library -> Chart.js. 3. Diagrama de Flujo del Objetivo: Info -> Pasos para ganar. Goal -> Informar/Organizar. Viz -> Diagrama de flujo horizontal con HTML/CSS. Interaction -> Ninguna, es un elemento visual estático de apoyo. Justification -> Aclara la progresión de la partida visualmente. Method -> HTML/Tailwind. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF6;
+            color: #3C3633;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #E0A75E;
+            border-bottom-color: #E0A75E;
+        }
+        .role-btn {
+            transition: all 0.3s;
+        }
+        .role-btn.active {
+            background-color: #E0A75E;
+            color: #FDFBF6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="nav-header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-bold text-[#3C3633]">Guía de LoL</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#objetivo" class="nav-link">Objetivo</a>
+                    <a href="#mapa" class="nav-link">El Mapa</a>
+                    <a href="#campeones" class="nav-link">Campeones</a>
+                    <a href="#fundamentos" class="nav-link">Fundamentos</a>
+                    <a href="#consejos" class="nav-link">Consejos</a>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="bg-gray-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#E0A75E] focus:border-[#E0A75E] block w-full p-2.5">
+                        <option value="#home">Inicio</option>
+                        <option value="#objetivo">Objetivo</option>
+                        <option value="#mapa">El Mapa</option>
+                        <option value="#campeones">Campeones</option>
+                        <option value="#fundamentos">Fundamentos</option>
+                        <option value="#consejos">Consejos</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main id="home" class="container mx-auto px-6 py-8 md:py-16">
+        <section class="text-center mb-16 md:mb-24">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 text-[#3C3633]">Aprende a Jugar League of Legends</h1>
+            <p class="text-lg md:text-xl max-w-3xl mx-auto text-gray-600">
+                Bienvenido a la Grieta del Invocador. Esta guía interactiva te enseñará todo lo que necesitas saber para comenzar tu viaje en uno de los juegos más populares del mundo. ¡Prepárate para la batalla!
+            </p>
+        </section>
+
+        <section id="objetivo" class="mb-16 md:mb-24 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2">El Objetivo Principal</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">En League of Legends, el objetivo final no es solo conseguir eliminaciones, sino destruir la base enemiga a través de una serie de objetivos estratégicos. El camino hacia la victoria es claro.</p>
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                <div class="p-6 bg-white rounded-lg shadow-md text-center">
+                    <h3 class="font-semibold text-lg">1. Destruye las Torretas</h3>
+                    <p class="text-sm text-gray-600">Abre el camino a la base enemiga.</p>
+                </div>
+                <div class="text-2xl font-bold text-[#E0A75E]">→</div>
+                <div class="p-6 bg-white rounded-lg shadow-md text-center">
+                    <h3 class="font-semibold text-lg">2. Elimina los Inhibidores</h3>
+                    <p class="text-sm text-gray-600">Genera súper súbditos para presionar.</p>
+                </div>
+                <div class="text-2xl font-bold text-[#E0A75E]">→</div>
+                <div class="p-6 bg-[#E0A75E] text-white rounded-lg shadow-lg text-center">
+                    <h3 class="font-semibold text-lg">3. Destruye el Nexo</h3>
+                    <p class="text-sm">¡Gana la partida!</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="mapa" class="mb-16 md:mb-24 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2">El Campo de Batalla</h2>
+             <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">La "Grieta del Invocador" es el mapa donde ocurre la magia. Se divide en tres carriles y una jungla, cada una con un propósito específico. Conocer el terreno es el primer paso para dominarlo.</p>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <h3 class="font-bold text-xl mb-2">🌳 La Jungla</h3>
+                        <p class="text-gray-700">El área entre los carriles. El **Jungla** se encarga de derrotar monstruos neutrales para obtener oro y experiencia, y de ayudar a los carriles (lo que se conoce como "gankear").</p>
+                    </div>
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <h3 class="font-bold text-xl mb-2">⚔️ Carriles (Lanes)</h3>
+                        <p class="text-gray-700">Son los caminos principales donde los equipos luchan. Cada carril tiene un rol asociado:</p>
+                        <ul class="list-disc list-inside mt-2 space-y-1 text-gray-600">
+                           <li>**Top (Superior):** Generalmente para campeones resistentes como Tanques y Luchadores.</li>
+                           <li>**Mid (Central):** Ideal para campeones con alto daño mágico (Magos) o Asesinos.</li>
+                           <li>**Bot (Inferior):** Un dúo: un Tirador (ADC) y un Soporte (Support).</li>
+                        </ul>
+                    </div>
+                     <div class="border p-4 rounded-lg bg-gray-50">
+                        <h3 class="font-bold text-xl mb-2">🏰 La Base</h3>
+                        <p class="text-gray-700">Tu punto de partida y regeneración. Aquí se encuentra la tienda para comprar objetos y el Nexo que debes proteger a toda costa.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="campeones" class="mb-16 md:mb-24 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2">Elige tu Campeón</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Con más de 160 campeones, la elección puede ser abrumadora. Sin embargo, todos se agrupan en roles distintos. Haz clic en un rol para conocer su función en el equipo.</p>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-6">
+                    <button class="role-btn active px-4 py-2 rounded-full font-semibold border-2 border-[#E0A75E]" data-role="tanque">🛡️ Tanque</button>
+                    <button class="role-btn px-4 py-2 rounded-full font-semibold border-2 border-[#E0A75E]" data-role="luchador">⚔️ Luchador</button>
+                    <button class="role-btn px-4 py-2 rounded-full font-semibold border-2 border-[#E0A75E]" data-role="mago">🔮 Mago</button>
+                    <button class="role-btn px-4 py-2 rounded-full font-semibold border-2 border-[#E0A75E]" data-role="asesino">🔪 Asesino</button>
+                    <button class="role-btn px-4 py-2 rounded-full font-semibold border-2 border-[#E0A75E]" data-role="tirador">🏹 Tirador</button>
+                    <button class="role-btn px-4 py-2 rounded-full font-semibold border-2 border-[#E0A75E]" data-role="soporte">💖 Soporte</button>
+                </div>
+                <div id="role-info" class="p-6 bg-gray-50 rounded-lg min-h-[150px]">
+                    <h3 id="role-title" class="text-2xl font-bold mb-2 text-[#3C3633]"></h3>
+                    <p id="role-description" class="text-gray-700"></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="fundamentos" class="mb-16 md:mb-24 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-12">Fundamentos para la Victoria</h2>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold mb-4">Economía y Poder</h3>
+                     <p class="text-gray-600 mb-6">Tu fuerza en el juego depende de dos recursos clave que debes acumular constantemente: oro y experiencia. Esto te permite comprar objetos poderosos y mejorar tus habilidades.</p>
+                     <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <h4 class="font-bold">💰 Conseguir Oro</h4>
+                            <p class="text-gray-600">La principal forma de obtener oro es dando el **último golpe** a los súbditos (minions) enemigos. Con oro, compras objetos en la tienda para hacerte más fuerte.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <h4 class="font-bold">⭐ Ganar Experiencia</h4>
+                            <p class="text-gray-600">Ganas experiencia por estar cerca de los súbditos enemigos cuando mueren. La experiencia te permite subir de nivel y mejorar tus habilidades (Q, W, E, R).</p>
+                        </div>
+                     </div>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold mb-4">Objetivos Neutrales de la Jungla</h3>
+                     <p class="text-gray-600 mb-6">La jungla alberga monstruos que otorgan ventajas cruciales a todo tu equipo. Controlarlos puede cambiar el curso de la partida. Su importancia varía, como puedes ver en el gráfico.</p>
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="chart-container">
+                             <canvas id="objectivesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+             </div>
+        </section>
+
+        <section id="consejos" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2">Consejos para Empezar</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Tu viaje en League of Legends apenas comienza. Aquí tienes algunos consejos clave para que tus primeras partidas sean más divertidas y productivas.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2">1. Juega el Tutorial</h3>
+                    <p class="text-gray-600">Es la mejor forma de aprender los controles y conceptos básicos sin presión.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2">2. Prueba en "Co-op vs. IA"</h3>
+                    <p class="text-gray-600">Juega contra bots para practicar con campeones y aprender a farmear sin estrés.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2">3. Concéntrate en 1-2 Roles</h3>
+                    <p class="text-gray-600">No intentes aprenderlo todo a la vez. Domina un rol y 2-3 campeones para empezar.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2">4. Comunícate con Señales</h3>
+                    <p class="text-gray-600">Usa las señales (pings) para avisar de peligros o pedir ayuda. Es rápido y efectivo.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2">5. No te Desanimes</h3>
+                    <p class="text-gray-600">La curva de aprendizaje es alta. Cada partida, incluso una derrota, es una lección.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="font-bold text-lg mb-2">6. Usa /mute all</h3>
+                    <p class="text-gray-600">Si un jugador es tóxico, siléncialo. Jugarás mejor si te concentras y te diviertes.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="text-center py-8 mt-16 border-t border-gray-200">
+        <p class="text-gray-500">¡Nos vemos en la Grieta, Invocador!</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const roles = {
+                tanque: {
+                    title: '🛡️ Tanque',
+                    description: 'Los tanques son la línea frontal del equipo. Su especialidad es absorber grandes cantidades de daño y proteger a sus compañeros más frágiles. Inician peleas y controlan a los enemigos.'
+                },
+                luchador: {
+                    title: '⚔️ Luchador',
+                    description: 'Los luchadores son campeones versátiles que combinan una buena cantidad de daño con una resistencia considerable. Son excelentes en duelos y pueden ser tanto una amenaza ofensiva como una defensa sólida.'
+                },
+                mago: {
+                    title: '🔮 Mago',
+                    description: 'Los magos causan daño mágico a distancia, a menudo con habilidades que afectan a grandes áreas. Son capaces de eliminar a enemigos frágiles de un solo combo y son cruciales en las peleas de equipo.'
+                },
+                asesino: {
+                    title: '🔪 Asesino',
+                    description: 'Los asesinos se especializan en la movilidad y el daño explosivo para eliminar rápidamente a un objetivo prioritario (como un Tirador o Mago). Entran, matan y salen antes de que el enemigo pueda reaccionar.'
+                },
+                tirador: {
+                    title: '🏹 Tirador (ADC)',
+                    description: 'Los tiradores, también conocidos como ADCs (Attack Damage Carry), son la principal fuente de daño físico constante del equipo. Atacan desde lejos, pero son muy frágiles y necesitan protección.'
+                },
+                soporte: {
+                    title: '💖 Soporte',
+                    description: 'Los soportes ayudan a su equipo de múltiples maneras: curando, otorgando escudos, proporcionando visión del mapa o inhabilitando a los enemigos con control de masas (aturdimientos, ralentizaciones).'
+                }
+            };
+
+            const roleButtons = document.querySelectorAll('.role-btn');
+            const roleTitle = document.getElementById('role-title');
+            const roleDescription = document.getElementById('role-description');
+
+            function updateRoleInfo(role) {
+                roleTitle.textContent = roles[role].title;
+                roleDescription.textContent = roles[role].description;
+                
+                roleButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if(btn.dataset.role === role) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+
+            roleButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    updateRoleInfo(button.dataset.role);
+                });
+            });
+
+            updateRoleInfo('tanque');
+
+            const ctx = document.getElementById('objectivesChart').getContext('2d');
+            const objectivesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mejoras (Rojo/Azul)', 'Dragones', 'Barón Nashor'],
+                    datasets: [{
+                        label: 'Importancia Estratégica',
+                        data: [25, 60, 100],
+                        backgroundColor: [
+                            'rgba(245, 158, 11, 0.6)',
+                            'rgba(220, 38, 38, 0.6)',
+                            'rgba(147, 51, 234, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(220, 38, 38, 1)',
+                            'rgba(147, 51, 234, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                display: false
+                            },
+                            grid: {
+                                display: false
+                            },
+                             display: false
+                        },
+                        x: {
+                             grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if(context.label === 'Mejoras (Rojo/Azul)'){
+                                        return 'Ventaja individual/dúo. Rojo ralentiza, Azul da maná.';
+                                    }
+                                    if(context.label === 'Dragones'){
+                                        return 'Ventajas permanentes para todo el equipo. Acumulables.';
+                                    }
+                                    if(context.label === 'Barón Nashor'){
+                                        return 'La mejora más poderosa. Potencia súbditos para el asalto final.';
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section[id]');
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+            
+            const mobileNav = document.getElementById('mobile-nav');
+            mobileNav.addEventListener('change', (e) => {
+                const targetId = e.target.value;
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
